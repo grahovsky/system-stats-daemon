@@ -1,4 +1,4 @@
-package storage
+package memoryStorage
 
 import (
 	"container/list"
@@ -65,7 +65,7 @@ func (ms *MemoryStorage) GetElementsAt(t time.Time) <-chan interface{} {
 	return elemCh
 }
 
-func (l *MemoryStorage) Print() {
+func (l *MemoryStorage) Show() {
 	l.rwm.RLock()
 	defer l.rwm.RUnlock()
 

@@ -8,6 +8,7 @@ import (
 
 	"github.com/grahovsky/system-stats-daemon/internal/config"
 	"github.com/grahovsky/system-stats-daemon/internal/logger"
+	"github.com/grahovsky/system-stats-daemon/internal/monitor"
 )
 
 func main() {
@@ -20,6 +21,12 @@ func main() {
 		syscall.SIGTERM,
 		syscall.SIGQUIT)
 	defer cancel()
+
+	ctx, done := context.WithCancel(ctx)
+	go func() {
+		defer done()
+		monitor.New(ctx)
+	}()
 
 	<-ctx.Done()
 }
