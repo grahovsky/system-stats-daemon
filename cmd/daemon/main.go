@@ -24,20 +24,20 @@ func main() {
 		syscall.SIGQUIT)
 	defer cancel()
 
-	ctx, done := context.WithCancel(ctx)
+	// ctx, done := context.WithCancel(ctx)
 	go func() {
-		defer done()
+		// defer done()
 		ms := memoryStorage.New()
 		monitor.NewLoad(ctx, ms)
 	}()
 
 	go func() {
-		defer done()
+		// defer done()
 		ms := memoryStorage.New()
 		monitor.NewCpu(ctx, ms)
 	}()
 
-	<-ctx.Done()
+	// <-ctx.Done()
 
-	time.Sleep(time.Second)
+	time.Sleep(10 * time.Second)
 }

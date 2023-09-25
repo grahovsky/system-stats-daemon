@@ -1,3 +1,6 @@
+//go:build linux
+// +build linux
+
 package cpu
 
 import (
@@ -9,20 +12,14 @@ import (
 	"github.com/grahovsky/system-stats-daemon/internal/models"
 )
 
-func GetStats() (*models.CpuInfo, error) {
-	cpuIdle, cpuTotal := getCPUSample()
-
-	return &models.CpuInfo{
-		Idle:  cpuIdle,
-		Total: cpuTotal,
-	}, nil
-}
-
-func getCPUSample() (idle, total uint64) {
+func getCPUSample() (*models.CpuInfo, error) {
 	contents, err := os.ReadFile("/proc/stat")
 	if err != nil {
-		return
+		return nil, err
 	}
+
+	cpuI := models.CpuInfo{}
+
 	lines := strings.Split(string(contents), "\n")
 	for _, line := range lines {
 		fields := strings.Fields(line)
@@ -33,13 +30,13 @@ func getCPUSample() (idle, total uint64) {
 				if err != nil {
 					fmt.Println("Error: ", i, fields[i], err)
 				}
-				total += val // tally up all the numbers to get total ticks
-				if i == 4 {  // idle is the 5th field in the cpu line
-					idle = val
+				cpuI.System += val // tally up all the numbers to get total ticks
+				if i == 4 {        // idle is the 5th field in the cpu line
+					cpuI.Idle = val
 				}
 			}
-			return
+			return &cpuI, nil
 		}
 	}
-	return
+	return &cpuI, nil
 }

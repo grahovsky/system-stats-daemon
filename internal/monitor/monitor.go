@@ -37,9 +37,13 @@ func NewLoad(ctx context.Context, ms storage.Storage) {
 
 func NewCpu(ctx context.Context, ms storage.Storage) {
 	num := 0
+	// time nanosecond, win cmd timeout 1s min
 	tiker := time.NewTicker(1 * time.Second)
 	defer tiker.Stop()
 	defer ms.Show()
+
+	// for correctly cmd exec win
+	// executor.Exec("chcp", []string{"65001"})
 
 	for {
 		select {
