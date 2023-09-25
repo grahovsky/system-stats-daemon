@@ -66,11 +66,11 @@ func (ms *MemoryStorage) GetElementsAt(t time.Time) <-chan interface{} {
 	return elemCh
 }
 
-func (l *MemoryStorage) Show() {
-	l.rwm.RLock()
-	defer l.rwm.RUnlock()
+func (ms *MemoryStorage) Show() {
+	ms.rwm.RLock()
+	defer ms.rwm.RUnlock()
 
-	for e := l.list.Front(); e != nil; e = e.Next() {
+	for e := ms.list.Front(); e != nil; e = e.Next() {
 		fmt.Printf("%s: %+v\n", e.Value.(element).timestamp, e.Value.(element).data)
 	}
 }

@@ -4,32 +4,52 @@ import (
 	"context"
 	"time"
 
+	"github.com/grahovsky/system-stats-daemon/internal/logger"
+	"github.com/grahovsky/system-stats-daemon/internal/stats/cpu"
+	"github.com/grahovsky/system-stats-daemon/internal/stats/load"
 	"github.com/grahovsky/system-stats-daemon/internal/storage"
-	memoryStorage "github.com/grahovsky/system-stats-daemon/internal/storage/memory"
 )
 
-func New(ctx context.Context) {
-	var sm storage.Storage = memoryStorage.New()
-	d := struct {
-		cpu int64
-		mem int64
-	}{
-		cpu: 100,
-		mem: 16,
-	}
-
+func NewLoad(ctx context.Context, ms storage.Storage) {
 	num := 0
 	tiker := time.NewTicker(1 * time.Second)
 	defer tiker.Stop()
-	defer sm.Show()
+	defer ms.Show()
 
 	for {
 		select {
 		case <-tiker.C:
-			sm.Push(d, time.Now())
+			d, err := load.GetStats()
+			if err != nil {
+				logger.Error(err.Error())
+			}
+
+			ms.Push(d, time.Now())
 			num++
-			d.cpu -= 1
-			d.mem++
+			if num >= 5 {
+				return
+			}
+		case <-ctx.Done():
+			return
+		}
+	}
+}
+
+func NewCpu(ctx context.Context, ms storage.Storage) {
+	num := 0
+	tiker := time.NewTicker(1 * time.Second)
+	defer tiker.Stop()
+	defer ms.Show()
+
+	for {
+		select {
+		case <-tiker.C:
+			d, err := cpu.GetStats()
+			if err != nil {
+				logger.Error(err.Error())
+			}
+			ms.Push(d, time.Now())
+			num++
 			if num >= 5 {
 				return
 			}
