@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/grahovsky/system-stats-daemon/internal/config"
 	"github.com/grahovsky/system-stats-daemon/internal/logger"
 )
 
@@ -17,19 +18,19 @@ type element struct {
 type MemoryStorage struct {
 	rwm  sync.RWMutex
 	list *list.List
-	size int
+	size int64
 }
 
-func New(size int) *MemoryStorage {
-	return &MemoryStorage{rwm: sync.RWMutex{}, list: list.New(), size: size}
+func New() *MemoryStorage {
+	return &MemoryStorage{rwm: sync.RWMutex{}, list: list.New(), size: config.Settings.Stats.Limit}
 }
 
-func (ms *MemoryStorage) SetSize(owner string, newsize int32) {
+func (ms *MemoryStorage) SetSize(owner string, newsize int64) {
 	ms.rwm.Lock()
 	defer ms.rwm.Unlock()
 
-	if int(newsize) > ms.size {
-		ms.size = int(newsize)
+	if newsize > ms.size {
+		ms.size = newsize
 		logger.Info(fmt.Sprintf("[%s] changed size of storage. New size: %d", owner, newsize))
 	}
 }
@@ -41,7 +42,7 @@ func (ms *MemoryStorage) Push(s interface{}, t time.Time) {
 	if ms.size == 0 {
 		return
 	}
-	if ms.list.Len() == ms.size {
+	if ms.list.Len() == int(ms.size) {
 		ms.list.Remove(ms.list.Back())
 	}
 	ms.list.PushFront(element{timestamp: t.Truncate(time.Second), data: s})

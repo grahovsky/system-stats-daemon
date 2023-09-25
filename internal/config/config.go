@@ -14,14 +14,14 @@ type Config struct {
 		Host string `mapstructure:"host" env:"SRV_HOST"`
 		Port string `mapstructure:"port" env:"HTTP_PORT"`
 	} `mapstructure:"server"`
-	Metrics struct {
-		Limit   bool `mapstructure:"limit" env:"METRICS_LIMIT"`
+	Stats struct {
+		Limit   int64 `mapstructure:"limit" env:"STATS_LIMIT"`
 		Collect struct {
 			LoadAverage bool `mapstructure:"loadAverage" env:"LOAD_AVERAGE"`
 			Cpu         bool `mapstructure:"cpu" env:"CPU"`
 			DiskInfo    bool `mapstructure:"discInfo" env:"DISC_INFO"`
 		} `mapstructure:"collect"`
-	} `mapstructure:"metrics"`
+	} `mapstructure:"stats"`
 }
 
 var Settings *Config
@@ -67,14 +67,14 @@ func defaultSettings() Config {
 			Host string `mapstructure:"host" env:"SRV_HOST"`
 			Port string `mapstructure:"port" env:"HTTP_PORT"`
 		}{Host: "0.0.0.0", Port: "8086"},
-		Metrics: struct {
-			Limit   bool "mapstructure:\"limit\" env:\"METRICS_LIMIT\""
+		Stats: struct {
+			Limit   int64 "mapstructure:\"limit\" env:\"STATS_LIMIT\""
 			Collect struct {
 				LoadAverage bool "mapstructure:\"loadAverage\" env:\"LOAD_AVERAGE\""
 				Cpu         bool "mapstructure:\"cpu\" env:\"CPU\""
 				DiskInfo    bool "mapstructure:\"discInfo\" env:\"DISC_INFO\""
 			} "mapstructure:\"collect\""
-		}{Limit: false, Collect: struct {
+		}{Limit: 600, Collect: struct {
 			LoadAverage bool "mapstructure:\"loadAverage\" env:\"LOAD_AVERAGE\""
 			Cpu         bool "mapstructure:\"cpu\" env:\"CPU\""
 			DiskInfo    bool "mapstructure:\"discInfo\" env:\"DISC_INFO\""

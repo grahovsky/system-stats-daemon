@@ -13,7 +13,7 @@ import (
 
 func main() {
 	logger.Info(config.Settings.Server.Host)
-	logger.Info(strconv.FormatBool(config.Settings.Metrics.Collect.Cpu))
+	logger.Info(strconv.FormatBool(config.Settings.Stats.Collect.Cpu))
 
 	ctx, cancel := signal.NotifyContext(context.Background(),
 		syscall.SIGHUP,

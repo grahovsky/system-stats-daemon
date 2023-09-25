@@ -9,7 +9,7 @@ import (
 )
 
 func New(ctx context.Context) {
-	var sm storage.Storage = memoryStorage.New(20)
+	var sm storage.Storage = memoryStorage.New()
 	d := struct {
 		cpu int64
 		mem int64
