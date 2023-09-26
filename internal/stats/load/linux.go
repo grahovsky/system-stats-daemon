@@ -1,3 +1,6 @@
+//go:build linux
+// +build linux
+
 package load
 
 import (
@@ -14,8 +17,7 @@ const (
 	load15MinPos = 2
 )
 
-// GetStats ...
-func GetStats() (*models.LoadAverageInfo, error) {
+func GetStatsOs() (*models.LoadAverageInfo, error) {
 	res, err := executor.Exec("cat", []string{"/proc/loadavg"})
 	if err != nil {
 		return nil, err

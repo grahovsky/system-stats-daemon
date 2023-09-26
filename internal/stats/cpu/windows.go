@@ -19,7 +19,7 @@ func init() {
 }
 
 // криво работает, т.к. опрос идет раз в одну секунду, т.е. получается 1с + 1с задержка. Перевел на wmi
-func getCPUSampleOld() (*models.CpuInfo, error) { //nolint
+func GetStatsOs_() (*models.CpuInfo, error) { //nolint
 	out, err := executor.Exec("typeperf", []string{
 		`\Processor Information(_Total)\% Privileged Time`,
 		`\Processor Information(_Total)\% User Time`,

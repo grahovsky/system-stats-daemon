@@ -36,6 +36,11 @@ func main() {
 		monitor.NewCpu(ctx, msc)
 	}()
 
+	msd := memoryStorage.New()
+	go func() {
+		monitor.NewDisk(ctx, msd)
+	}()
+
 	tiker := time.NewTicker(5 * time.Second)
 	defer tiker.Stop()
 

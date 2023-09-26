@@ -7,7 +7,12 @@ type LoadAverageInfo struct {
 }
 
 type CpuInfo struct {
-	System uint64
-	User   uint64
-	Idle   uint64
+	User   float64
+	System float64
+	Idle   float64
+}
+
+type DiskInfo struct {
+	Kbt float64
+	Tps float64
 }

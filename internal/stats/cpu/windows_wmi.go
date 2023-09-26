@@ -15,7 +15,7 @@ type Win32_PerfFormattedData_PerfOS_Processor struct {
 	PercentIdleTime       uint64
 }
 
-func getCPUSample() (*models.CpuInfo, error) {
+func getStats() (*models.CpuInfo, error) {
 	var dst []Win32_PerfFormattedData_PerfOS_Processor
 	query := "SELECT * FROM Win32_PerfFormattedData_PerfOS_Processor WHERE Name = '_Total'"
 	err := wmi.Query(query, &dst)
