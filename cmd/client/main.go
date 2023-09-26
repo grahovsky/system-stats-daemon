@@ -14,6 +14,7 @@ import (
 	"github.com/grahovsky/system-stats-daemon/internal/client"
 	"github.com/grahovsky/system-stats-daemon/internal/logger"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
@@ -40,7 +41,10 @@ func main() {
 		syscall.SIGQUIT)
 	defer cancel()
 
-	conn, err := grpc.Dial(net.JoinHostPort(host, port), grpc.WithInsecure())
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	conn, err := grpc.Dial(net.JoinHostPort(host, port), opts...)
 	if err != nil {
 		fmt.Println("failed to dial connection" + err.Error())
 		return
