@@ -1,19 +1,19 @@
 syntax = "proto3";
 
-package stats_sevice;
+package stats_service;
 
-option go_package = "./pb;statsSevice";
+option go_package = "./stats_service;stats_service";
 
-service StatsServiceV1 {
-  rpc StartMonitoring(StartMonitoringRequest) returns (stream StartMonitoringResponse);
+service StatsService {
+  rpc StatsMonitoring(StatsRequest) returns (stream StatsResponse);
 }
 
-message StartMonitoringRequest {
+message StatsRequest {
   int64 response_period = 1;
   int64 range_time = 2;
 }
 
-message StartMonitoringResponse {
+message StatsResponse {
   LoadInfo load_info = 1;
   CPUInfo cpu_info = 2;
   DiskInfo disk_info = 3;

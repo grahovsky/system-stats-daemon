@@ -1,7 +1,6 @@
 package monitor
 
 import (
-	"context"
 	"time"
 
 	"github.com/grahovsky/system-stats-daemon/internal/logger"
@@ -11,56 +10,26 @@ import (
 	"github.com/grahovsky/system-stats-daemon/internal/storage"
 )
 
-func NewLoad(ctx context.Context, ms storage.Storage) {
-	tiker := time.NewTicker(1 * time.Second)
-	defer tiker.Stop()
-
-	for {
-		select {
-		case <-tiker.C:
-			d, err := load.GetStats()
-			if err != nil {
-				logger.Error(err.Error())
-			}
-			ms.Push(d, time.Now())
-		case <-ctx.Done():
-			return
-		}
+func ScanLoad(ms storage.Storage) {
+	d, err := load.GetStats()
+	if err != nil {
+		logger.Error(err.Error())
 	}
+	ms.Push(d, time.Now())
 }
 
-func NewCpu(ctx context.Context, ms storage.Storage) {
-	tiker := time.NewTicker(1 * time.Second)
-	defer tiker.Stop()
-
-	for {
-		select {
-		case <-tiker.C:
-			d, err := cpu.GetStats()
-			if err != nil {
-				logger.Error(err.Error())
-			}
-			ms.Push(d, time.Now())
-		case <-ctx.Done():
-			return
-		}
+func ScanCpu(ms storage.Storage) {
+	d, err := cpu.GetStats()
+	if err != nil {
+		logger.Error(err.Error())
 	}
+	ms.Push(d, time.Now())
 }
 
-func NewDisk(ctx context.Context, ms storage.Storage) {
-	tiker := time.NewTicker(1 * time.Second)
-	defer tiker.Stop()
-
-	for {
-		select {
-		case <-tiker.C:
-			d, err := disk.GetStats()
-			if err != nil {
-				logger.Error(err.Error())
-			}
-			ms.Push(d, time.Now())
-		case <-ctx.Done():
-			return
-		}
+func ScanDisk(ms storage.Storage) {
+	d, err := disk.GetStats()
+	if err != nil {
+		logger.Error(err.Error())
 	}
+	ms.Push(d, time.Now())
 }
