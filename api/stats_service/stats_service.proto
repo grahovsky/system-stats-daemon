@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package stats_sevice;
+
+option go_package = "./pb;statsSevice";
+
+service StatsServiceV1 {
+  rpc StartMonitoring(StartMonitoringRequest) returns (stream StartMonitoringResponse);
+}
+
+message StartMonitoringRequest {
+  int64 response_period = 1;
+  int64 range_time = 2;
+}
+
+message StartMonitoringResponse {
+  LoadInfo load_info = 1;
+  CPUInfo cpu_info = 2;
+  DiskInfo disk_info = 3;
+}
+
+message LoadInfo {
+  double load_1min = 1;
+  double load_5min = 2;
+  double load_15min = 3;
+}
+
+message CPUInfo {
+  double user = 1;
+  double system = 2;
+  double idle = 3;
+}
+
+message DiskInfo {
+  double kbt = 1;
+  double tps = 2;
+}
