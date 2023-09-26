@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/grahovsky/system-stats-daemon/internal/logger"
@@ -44,21 +43,21 @@ func (s *StatsMonitoringSever) StartMonitoring() {
 		}
 	}()
 
-	// for debug
-	go func() {
-		tiker := time.NewTicker(5 * time.Second)
-		defer tiker.Stop()
+	// // for debug
+	// go func() {
+	// 	tiker := time.NewTicker(5 * time.Second)
+	// 	defer tiker.Stop()
 
-		for {
-			select {
-			case <-tiker.C:
-				elems := s.cStorage.msc.GetElements(5)
-				for e := range elems {
-					fmt.Printf("%+v\n", e)
-				}
-			case <-s.ctx.Done():
-				return
-			}
-		}
-	}()
+	// 	for {
+	// 		select {
+	// 		case <-tiker.C:
+	// 			elems := s.cStorage.msl.GetElements(5)
+	// 			for e := range elems {
+	// 				fmt.Printf("%+v\n", e)
+	// 			}
+	// 		case <-s.ctx.Done():
+	// 			return
+	// 		}
+	// 	}
+	// }()
 }

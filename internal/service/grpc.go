@@ -49,17 +49,19 @@ func (s *StatsMonitoringSever) Stop() {
 }
 
 func (s *StatsMonitoringSever) StatsMonitoring(req *pb.StatsRequest, stream pb.StatsService_StatsMonitoringServer) error {
-	responseTicker := time.NewTicker(time.Duration(time.Duration(req.ResponsePeriod).Seconds()))
+	responseTicker := time.NewTicker(time.Duration(req.ResponsePeriod) * time.Second)
 	defer responseTicker.Stop()
 	for {
 		select {
 		case <-responseTicker.C:
-
-			err := stream.Send(&pb.StatsResponse{LoadInfo: &pb.LoadInfo{Load_1Min: 1, Load_5Min: 5, Load_15Min: 15}, CpuInfo: &pb.CPUInfo{User: 2, System: 2.0, Idle: 3.1}, DiskInfo: &pb.DiskInfo{Kbt: 3.0, Tps: 4.0}})
+			err := stream.Send(&pb.StatsResponse{
+				LoadInfo: s.LoadInfoAvg(req.RangeTime),
+				CpuInfo:  s.CpuInfoAvg(req.RangeTime),
+				DiskInfo: s.DiskInfoAvg(req.RangeTime),
+			})
 			if err != nil {
 				return err
 			}
-
 		case <-stream.Context().Done():
 			logger.Error("sending data interrupted")
 			return nil
