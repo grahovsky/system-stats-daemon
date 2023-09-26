@@ -2,12 +2,12 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"time"
 
 	pb "github.com/grahovsky/system-stats-daemon/internal/api/stats_service"
 	"github.com/grahovsky/system-stats-daemon/internal/config"
+	"github.com/grahovsky/system-stats-daemon/internal/logger"
 	"google.golang.org/grpc"
 )
 
@@ -49,15 +49,19 @@ func (s *StatsMonitoringSever) Stop() {
 }
 
 func (s *StatsMonitoringSever) StatsMonitoring(req *pb.StatsRequest, stream pb.StatsService_StatsMonitoringServer) error {
-	tiker := time.NewTicker(5 * time.Second)
-	defer tiker.Stop()
-
+	responseTicker := time.NewTicker(time.Duration(time.Duration(req.ResponsePeriod).Seconds()))
+	defer responseTicker.Stop()
 	for {
 		select {
-		case <-tiker.C:
-			fmt.Println("grpc tik")
-		case <-s.ctx.Done():
-			fmt.Println("grpc done")
+		case <-responseTicker.C:
+
+			err := stream.Send(&pb.StatsResponse{LoadInfo: &pb.LoadInfo{Load_1Min: 1, Load_5Min: 5, Load_15Min: 15}, CpuInfo: &pb.CPUInfo{User: 2, System: 2.0, Idle: 3.1}, DiskInfo: &pb.DiskInfo{Kbt: 3.0, Tps: 4.0}})
+			if err != nil {
+				return err
+			}
+
+		case <-stream.Context().Done():
+			logger.Error("sending data interrupted")
 			return nil
 		}
 	}

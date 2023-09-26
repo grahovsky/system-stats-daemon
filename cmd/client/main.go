@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"net"
@@ -17,22 +16,13 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var (
-	host           string
-	port           string
-	responsePeriod int64
-	rangeTime      int64
-)
+var cc client.ClientConfig
 
 func init() {
-	flag.StringVar(&host, "host", "0.0.0.0", "server host")
-	flag.StringVar(&port, "port", "8086", "server port")
-	flag.Int64Var(&responsePeriod, "n", 5, "period for sending statistics (sec)")
-	flag.Int64Var(&rangeTime, "m", 15, "the range for which the average statistics are collected (sec)")
 }
 
 func main() {
-	flag.Parse()
+	client.ParseConfig(&cc)
 
 	ctx, cancel := signal.NotifyContext(context.Background(),
 		syscall.SIGHUP,
@@ -44,7 +34,7 @@ func main() {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
-	conn, err := grpc.Dial(net.JoinHostPort(host, port), opts...)
+	conn, err := grpc.Dial(net.JoinHostPort(cc.Host, cc.Port), opts...)
 	if err != nil {
 		fmt.Println("failed to dial connection" + err.Error())
 		return
@@ -54,8 +44,8 @@ func main() {
 	pbC := pb.NewStatsServiceClient(conn)
 
 	req := &pb.StatsRequest{
-		ResponsePeriod: responsePeriod,
-		RangeTime:      rangeTime,
+		ResponsePeriod: cc.ResponsePeriod,
+		RangeTime:      cc.RangeTime,
 	}
 
 	stream, err := pbC.StatsMonitoring(ctx, req)

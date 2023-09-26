@@ -57,9 +57,9 @@ func parseData(output string) (*models.CpuInfo, error) { //nolint
 		return nil, err
 	}
 	cpuI := models.CpuInfo{
-		System: uint64(system),
-		User:   uint64(user),
-		Idle:   uint64(idle),
+		System: system,
+		User:   user,
+		Idle:   idle,
 	}
 	return &cpuI, nil
 }
