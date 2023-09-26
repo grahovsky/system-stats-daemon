@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os/signal"
 	"strconv"
 	"syscall"
@@ -25,19 +26,28 @@ func main() {
 	defer cancel()
 
 	// ctx, done := context.WithCancel(ctx)
+	msl := memoryStorage.New()
 	go func() {
-		// defer done()
-		ms := memoryStorage.New()
-		monitor.NewLoad(ctx, ms)
+		monitor.NewLoad(ctx, msl)
 	}()
 
+	msc := memoryStorage.New()
 	go func() {
-		// defer done()
-		ms := memoryStorage.New()
-		monitor.NewCpu(ctx, ms)
+		monitor.NewCpu(ctx, msc)
 	}()
 
-	// <-ctx.Done()
+	tiker := time.NewTicker(5 * time.Second)
+	defer tiker.Stop()
 
-	time.Sleep(10 * time.Second)
+	for {
+		select {
+		case <-tiker.C:
+			elems := msc.GetElements(5)
+			for e := range elems {
+				fmt.Printf("%+v\n", e)
+			}
+		case <-ctx.Done():
+			return
+		}
+	}
 }

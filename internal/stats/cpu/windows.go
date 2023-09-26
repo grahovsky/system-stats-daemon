@@ -7,35 +7,15 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/StackExchange/wmi"
 	"github.com/grahovsky/system-stats-daemon/internal/executor"
 	"github.com/grahovsky/system-stats-daemon/internal/logger"
 	"github.com/grahovsky/system-stats-daemon/internal/models"
 	"github.com/grahovsky/system-stats-daemon/internal/stats"
 )
 
-type Win32_PerfFormattedData_PerfOS_Processor struct {
-	PercentProcessorTime  uint64
-	PercentUserTime       uint64
-	PercentPrivilegedTime uint64
-	PercentIdleTime       uint64
-}
-
-func getCPUSample() (*models.CpuInfo, error) {
-	var dst []Win32_PerfFormattedData_PerfOS_Processor
-	query := "SELECT * FROM Win32_PerfFormattedData_PerfOS_Processor WHERE Name = '_Total'"
-	err := wmi.Query(query, &dst)
-	if err != nil {
-		logger.Error(err.Error())
-		return nil, err
-	}
-
-	cpuLoad := dst[0]
-	return &models.CpuInfo{
-		System: cpuLoad.PercentProcessorTime,
-		User:   cpuLoad.PercentUserTime,
-		Idle:   cpuLoad.PercentIdleTime,
-	}, nil
+func init() {
+	executor.Exec("chcp", []string{"65001"})
+	logger.Info("encoding set: UTF-8")
 }
 
 // криво работает, т.к. опрос идет раз в одну секунду, т.е. получается 1с + 1с задержка. Перевел на wmi

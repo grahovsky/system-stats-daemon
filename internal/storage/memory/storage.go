@@ -66,6 +66,27 @@ func (ms *MemoryStorage) GetElementsAt(t time.Time) <-chan interface{} {
 	return elemCh
 }
 
+func (ms *MemoryStorage) GetElements(num int64) <-chan interface{} {
+	elemCh := make(chan interface{})
+	go func() {
+		ms.rwm.RLock()
+		defer close(elemCh)
+		defer ms.rwm.RUnlock()
+		last := ms.list.Front()
+		for num > 0 {
+			if last == nil {
+				break
+			}
+			elem := last.Value.(element)
+			elemCh <- elem.data
+			last = last.Next()
+			num--
+		}
+	}()
+
+	return elemCh
+}
+
 func (ms *MemoryStorage) Show() {
 	ms.rwm.RLock()
 	defer ms.rwm.RUnlock()
