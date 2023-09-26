@@ -23,7 +23,7 @@ func (s *StatsMonitoringSever) LoadInfoAvg(at int64) *pb.LoadInfo {
 	}
 
 	if i == 0 {
-		i = 1
+		return &pb.LoadInfo{}
 	}
 
 	return &pb.LoadInfo{Load_1Min: e1 / i, Load_5Min: e5 / i, Load_15Min: e15 / i}
@@ -45,7 +45,7 @@ func (s *StatsMonitoringSever) CpuInfoAvg(at int64) *pb.CPUInfo {
 	}
 
 	if i == 0 {
-		i = 1
+		return &pb.CPUInfo{}
 	}
 
 	return &pb.CPUInfo{User: user / i, System: system / i, Idle: idle / i}
@@ -66,7 +66,7 @@ func (s *StatsMonitoringSever) DiskInfoAvg(at int64) *pb.DiskInfo {
 	}
 
 	if i == 0 {
-		i = 1
+		return &pb.DiskInfo{}
 	}
 
 	return &pb.DiskInfo{Kbt: kbt / i, Tps: tps / i}
