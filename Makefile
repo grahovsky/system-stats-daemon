@@ -17,7 +17,7 @@ build-img:
 		-f build/Dockerfile .
 
 run-img: build-img
-	docker run -p 8080:8080 $(DOCKER_IMG)
+	docker run -p 8086:8086 $(DOCKER_IMG)
 
 version: build
 	$(BIN) --version
@@ -29,7 +29,7 @@ lint: install-lint-deps
 	golangci-lint run --timeout=90s ./...
 
 test:
-	go test -race ./...
+	go test -race ./... -count 100
 
 generate: 
 	go generate ./...

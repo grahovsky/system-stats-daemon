@@ -7,5 +7,5 @@ stats:
   limit: 600
   collect:
     cpu: true
-    discInfo: false
-    loadAverage: false
+    discInfo: true
+    loadAverage: true
