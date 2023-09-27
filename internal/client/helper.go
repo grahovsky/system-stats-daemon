@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/grahovsky/system-stats-daemon/internal/api/stats_service"
 	pb "github.com/grahovsky/system-stats-daemon/internal/api/stats_service"
 )
 
@@ -36,14 +35,14 @@ func round(v float64) float64 {
 	return math.Round(v*dec) / dec
 }
 
-func EmptyLoad(load *stats_service.LoadInfo) bool {
+func EmptyLoad(load *pb.LoadInfo) bool {
 	return load.Load_1Min == 0.0 && load.Load_5Min == 0.0 && load.Load_15Min == 0.0
 }
 
-func EmptyCPU(cpu *stats_service.CPUInfo) bool {
+func EmptyCPU(cpu *pb.CPUInfo) bool {
 	return cpu.User == 0.0 && cpu.System == 0.0 && cpu.Idle == 0.0
 }
 
-func EmptyDisk(disk *stats_service.DiskInfo) bool {
+func EmptyDisk(disk *pb.DiskInfo) bool {
 	return disk.Kbt == 0.0 && disk.Tps == 0.0
 }
