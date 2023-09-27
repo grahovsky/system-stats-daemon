@@ -53,15 +53,17 @@ func (s *StatsMonitoringSever) Stop() {
 func (s *StatsMonitoringSever) StatsMonitoring(req *pb.StatsRequest,
 	stream pb.StatsService_StatsMonitoringServer,
 ) error {
-	var clientId string
+	var clientID string
 	if info, ok := peer.FromContext(stream.Context()); ok {
-		clientId = info.Addr.String()
-		logger.Info(fmt.Sprintf("connected client %s, rangetime: %d, responseperiod: %d", clientId, req.RangeTime, req.ResponsePeriod))
+		clientID = info.Addr.String()
+		logger.Info(fmt.Sprintf("connected client %s, rangetime: %d, responseperiod: %d",
+			clientID, req.RangeTime, req.ResponsePeriod))
 	}
 
 	if req.RangeTime > config.Settings.Stats.Limit {
-		logger.Error(fmt.Sprintf("client %s err, rangetime exceeds limit stored stats time", clientId))
-		return status.Error(codes.Internal, fmt.Sprintf("rangetime (%d) exceeds limit stored stats time (%d)", req.RangeTime, config.Settings.Stats.Limit))
+		logger.Error(fmt.Sprintf("client %s err, rangetime exceeds limit stored stats time", clientID))
+		return status.Error(codes.Internal, fmt.Sprintf("rangetime (%d) exceeds limit stored stats time (%d)",
+			req.RangeTime, config.Settings.Stats.Limit))
 	}
 
 	responseTicker := time.NewTicker(time.Duration(req.ResponsePeriod) * time.Second)
@@ -84,7 +86,7 @@ func (s *StatsMonitoringSever) StatsMonitoring(req *pb.StatsRequest,
 			logger.Info("stopped server..")
 			return nil
 		case <-stream.Context().Done():
-			logger.Error(fmt.Sprintf("client (%s), sending data interrupted", clientId))
+			logger.Error(fmt.Sprintf("client (%s), sending data interrupted", clientID))
 			return nil
 		}
 	}
