@@ -22,7 +22,7 @@ func ScanLoad(ms storage.Storage) {
 	ms.Push(d, time.Now())
 }
 
-func ScanCpu(ms storage.Storage) {
+func ScanCPU(ms storage.Storage) {
 	d, err := cpu.GetStats()
 	if err != nil {
 		logger.Error(err.Error())

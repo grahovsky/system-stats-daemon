@@ -6,7 +6,7 @@ type LoadAverageInfo struct {
 	Load15Min float64
 }
 
-type CpuInfo struct {
+type CPUInfo struct {
 	User   float64
 	System float64
 	Idle   float64

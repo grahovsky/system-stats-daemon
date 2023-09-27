@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"time"
 
@@ -9,13 +10,15 @@ import (
 	"github.com/grahovsky/system-stats-daemon/internal/config"
 	"github.com/grahovsky/system-stats-daemon/internal/logger"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/peer"
+	"google.golang.org/grpc/status"
 )
 
 type StatsMonitoringSever struct {
 	ctx        context.Context
 	cStorage   *cStorage
 	grpcServer *grpc.Server
-	m_at       time.Time
 	pb.UnimplementedStatsServiceServer
 }
 
@@ -26,10 +29,12 @@ func NewStatsMonitoringSever(ctx context.Context) *StatsMonitoringSever {
 }
 
 func (s *StatsMonitoringSever) Start() error {
-	lis, err := net.Listen("tcp", net.JoinHostPort(config.Settings.Server.Host, config.Settings.Server.Port))
+	addr := net.JoinHostPort(config.Settings.Server.Host, config.Settings.Server.Port)
+	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
+	logger.Info(fmt.Sprintf("started server %s", addr))
 
 	var opts []grpc.ServerOption
 	s.grpcServer = grpc.NewServer(opts...)
@@ -38,21 +43,25 @@ func (s *StatsMonitoringSever) Start() error {
 	s.StartMonitoring()
 	pb.RegisterStatsServiceServer(s.grpcServer, s)
 
-	if err = s.grpcServer.Serve(lis); err != nil {
-		return err
-	}
-
-	return nil
+	return s.grpcServer.Serve(lis)
 }
 
 func (s *StatsMonitoringSever) Stop() {
 	s.grpcServer.GracefulStop()
 }
 
-func (s *StatsMonitoringSever) StatsMonitoring(req *pb.StatsRequest, stream pb.StatsService_StatsMonitoringServer) error {
+func (s *StatsMonitoringSever) StatsMonitoring(req *pb.StatsRequest,
+	stream pb.StatsService_StatsMonitoringServer,
+) error {
+	var clientId string
+	if info, ok := peer.FromContext(stream.Context()); ok {
+		clientId = info.Addr.String()
+		logger.Info(fmt.Sprintf("connected client %s, rangetime: %d, responseperiod: %d", clientId, req.RangeTime, req.ResponsePeriod))
+	}
+
 	if req.RangeTime > config.Settings.Stats.Limit {
-		logger.Error("client range time exceeds set limit stats")
-		return nil
+		logger.Error(fmt.Sprintf("client %s err, rangetime exceeds limit stored stats time", clientId))
+		return status.Error(codes.Internal, fmt.Sprintf("rangetime (%d) exceeds limit stored stats time (%d)", req.RangeTime, config.Settings.Stats.Limit))
 	}
 
 	responseTicker := time.NewTicker(time.Duration(req.ResponsePeriod) * time.Second)
@@ -65,17 +74,17 @@ func (s *StatsMonitoringSever) StatsMonitoring(req *pb.StatsRequest, stream pb.S
 			}
 			err := stream.Send(&pb.StatsResponse{
 				LoadInfo: s.LoadInfoAvg(req.RangeTime),
-				CpuInfo:  s.CpuInfoAvg(req.RangeTime),
+				CPUInfo:  s.CPUInfoAvg(req.RangeTime),
 				DiskInfo: s.DiskInfoAvg(req.RangeTime),
 			})
 			if err != nil {
 				return err
 			}
 		case <-s.ctx.Done():
-			logger.Info("server stoped..")
+			logger.Info("stopped server..")
 			return nil
 		case <-stream.Context().Done():
-			logger.Error("sending data interrupted")
+			logger.Error(fmt.Sprintf("client (%s), sending data interrupted", clientId))
 			return nil
 		}
 	}

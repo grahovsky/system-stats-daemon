@@ -23,7 +23,7 @@ func GetStatsOs() (*models.LoadAverageInfo, error) {
 		return nil, err
 	}
 
-	fields := strings.Fields(string(res))
+	fields := strings.Fields(res)
 
 	load1Min, err := strconv.ParseFloat(fields[load1MinPos], 64)
 	if err != nil {

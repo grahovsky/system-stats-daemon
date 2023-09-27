@@ -1,4 +1,4 @@
-package memoryStorage
+package memorystorage
 
 import (
 	"container/list"

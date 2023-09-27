@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var cc client.ClientConfig
+var cc client.Config
 
 func init() {
 	client.ParseConfig(&cc)

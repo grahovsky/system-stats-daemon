@@ -17,13 +17,13 @@ const (
 	idlePos   = 19
 )
 
-func GetStatsOs() (*models.CpuInfo, error) {
+func GetStatsOs() (*models.CPUInfo, error) {
 	res, err := executor.Exec("iostat", []string{"-c"})
 	if err != nil {
 		return nil, err
 	}
 
-	fields := strings.Fields(string(res))
+	fields := strings.Fields(res)
 
 	user, err := strconv.ParseFloat(fields[userPos], 64)
 	if err != nil {
@@ -40,7 +40,7 @@ func GetStatsOs() (*models.CpuInfo, error) {
 		return nil, err
 	}
 
-	return &models.CpuInfo{
+	return &models.CPUInfo{
 		User:   user,
 		System: system,
 		Idle:   idle,

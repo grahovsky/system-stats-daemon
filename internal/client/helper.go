@@ -16,9 +16,9 @@ func PrintResponse(data *pb.StatsResponse) {
 	fmt.Println("\tload avg 15min:", round(data.GetLoadInfo().GetLoad_15Min()))
 
 	fmt.Println("CPU:")
-	fmt.Println("\tuser:", round(data.GetCpuInfo().GetUser()))
-	fmt.Println("\tsystem:", round(data.GetCpuInfo().GetSystem()))
-	fmt.Println("\tidle:", round(data.GetCpuInfo().GetIdle()))
+	fmt.Println("\tuser:", round(data.GetCPUInfo().GetUser()))
+	fmt.Println("\tsystem:", round(data.GetCPUInfo().GetSystem()))
+	fmt.Println("\tidle:", round(data.GetCPUInfo().GetIdle()))
 
 	fmt.Println("Disk:")
 	fmt.Println("\tkbt:", round(data.GetDiskInfo().GetKbt()))

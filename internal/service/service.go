@@ -28,7 +28,6 @@ func (s *StatsMonitoringSever) StartMonitoring() {
 		msc:   msc,
 		msd:   msd,
 	}
-	s.m_at = time.Now()
 
 	go func() {
 		tiker := time.NewTicker(1 * time.Second)
@@ -39,12 +38,13 @@ func (s *StatsMonitoringSever) StartMonitoring() {
 			case <-tiker.C:
 				monitor.Default(s.cStorage.msdef)
 				monitor.ScanLoad(s.cStorage.msl)
-				monitor.ScanCpu(s.cStorage.msc)
+				monitor.ScanCPU(s.cStorage.msc)
 				monitor.ScanDisk(s.cStorage.msd)
 			case <-s.ctx.Done():
-				logger.Info("scan stoped..")
+				logger.Info("stopped stats scan..")
 				return
 			}
 		}
 	}()
+	logger.Info("started stats scan")
 }

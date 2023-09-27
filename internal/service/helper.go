@@ -4,7 +4,6 @@ import (
 	"time"
 
 	pb "github.com/grahovsky/system-stats-daemon/internal/api/stats_service"
-	"github.com/grahovsky/system-stats-daemon/internal/logger"
 	"github.com/grahovsky/system-stats-daemon/internal/models"
 )
 
@@ -30,7 +29,7 @@ func (s *StatsMonitoringSever) LoadInfoAvg(at int64) *pb.LoadInfo {
 	return &pb.LoadInfo{Load_1Min: e1 / i, Load_5Min: e5 / i, Load_15Min: e15 / i}
 }
 
-func (s *StatsMonitoringSever) CpuInfoAvg(at int64) *pb.CPUInfo {
+func (s *StatsMonitoringSever) CPUInfoAvg(at int64) *pb.CPUInfo {
 	timeAt := time.Now().Add(-time.Duration(at) * time.Second)
 
 	var user, system, idle float64
@@ -38,7 +37,7 @@ func (s *StatsMonitoringSever) CpuInfoAvg(at int64) *pb.CPUInfo {
 
 	elems := s.cStorage.msc.GetElementsAt(timeAt)
 	for el := range elems {
-		elem := el.(*models.CpuInfo)
+		elem := el.(*models.CPUInfo)
 		user += elem.User
 		system += elem.System
 		idle += elem.Idle
@@ -73,10 +72,7 @@ func (s *StatsMonitoringSever) DiskInfoAvg(at int64) *pb.DiskInfo {
 	return &pb.DiskInfo{Kbt: kbt / i, Tps: tps / i}
 }
 
-func (s *StatsMonitoringSever) checkRT(t_at int64) bool {
-	// return time.Now().After(s.m_at.Add(time.Duration(t_at) * time.Second))
-	// if limit storage, date stats != date server start, add technical storage
+func (s *StatsMonitoringSever) checkRT(tAt int64) bool {
 	sa := <-s.cStorage.msdef.StoreAt()
-	logger.Info(sa.(time.Time).String())
-	return time.Now().After(sa.(time.Time).Add(time.Duration(t_at) * time.Second))
+	return time.Now().After(sa.(time.Time).Add(time.Duration(tAt) * time.Second))
 }

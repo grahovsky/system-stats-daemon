@@ -19,7 +19,7 @@ func init() {
 }
 
 // криво работает, т.к. опрос идет раз в одну секунду, т.е. получается 1с + 1с задержка. Перевел на wmi
-func GetStatsOs_() (*models.CpuInfo, error) { //nolint
+func GetStatsOs_() (*models.CPUInfo, error) { //nolint
 	out, err := executor.Exec("typeperf", []string{
 		`\Processor Information(_Total)\% Privileged Time`,
 		`\Processor Information(_Total)\% User Time`,
@@ -33,7 +33,7 @@ func GetStatsOs_() (*models.CpuInfo, error) { //nolint
 	return parseData(string(out))
 }
 
-func parseData(output string) (*models.CpuInfo, error) { //nolint
+func parseData(output string) (*models.CPUInfo, error) { //nolint
 	var err error
 	lines := strings.Split(output, "\r\n")
 	if len(lines) < 3 {
@@ -56,7 +56,7 @@ func parseData(output string) (*models.CpuInfo, error) { //nolint
 	if err != nil {
 		return nil, err
 	}
-	cpuI := models.CpuInfo{
+	cpuI := models.CPUInfo{
 		System: system,
 		User:   user,
 		Idle:   idle,

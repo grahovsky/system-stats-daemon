@@ -22,7 +22,7 @@ func GetStatsOs() (*models.DiskInfo, error) {
 		return nil, err
 	}
 
-	fields := strings.Fields(string(res))
+	fields := strings.Fields(res)
 
 	kbt, err := strconv.ParseFloat(fields[kbtPos], 64)
 	if err != nil {
