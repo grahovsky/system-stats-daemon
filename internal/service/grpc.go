@@ -15,6 +15,7 @@ type StatsMonitoringSever struct {
 	ctx        context.Context
 	cStorage   *cStorage
 	grpcServer *grpc.Server
+	m_at       time.Time
 	pb.UnimplementedStatsServiceServer
 }
 
@@ -49,11 +50,19 @@ func (s *StatsMonitoringSever) Stop() {
 }
 
 func (s *StatsMonitoringSever) StatsMonitoring(req *pb.StatsRequest, stream pb.StatsService_StatsMonitoringServer) error {
+	if req.RangeTime > config.Settings.Stats.Limit {
+		logger.Error("client range time exceeds set limit stats")
+		return nil
+	}
+
 	responseTicker := time.NewTicker(time.Duration(req.ResponsePeriod) * time.Second)
 	defer responseTicker.Stop()
 	for {
 		select {
 		case <-responseTicker.C:
+			if !s.checkRT(req.RangeTime) {
+				continue
+			}
 			err := stream.Send(&pb.StatsResponse{
 				LoadInfo: s.LoadInfoAvg(req.RangeTime),
 				CpuInfo:  s.CpuInfoAvg(req.RangeTime),
@@ -62,6 +71,9 @@ func (s *StatsMonitoringSever) StatsMonitoring(req *pb.StatsRequest, stream pb.S
 			if err != nil {
 				return err
 			}
+		case <-s.ctx.Done():
+			logger.Info("server stoped..")
+			return nil
 		case <-stream.Context().Done():
 			logger.Error("sending data interrupted")
 			return nil

@@ -4,6 +4,6 @@ server:
   host: "0.0.0.0"
   port: "8086"
 stats:
-  limit: 3
+  limit: 600
   collect:
     cpu: true

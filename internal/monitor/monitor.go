@@ -10,6 +10,10 @@ import (
 	"github.com/grahovsky/system-stats-daemon/internal/storage"
 )
 
+func Default(ms storage.Storage) {
+	ms.Push(&struct{}{}, time.Now())
+}
+
 func ScanLoad(ms storage.Storage) {
 	d, err := load.GetStats()
 	if err != nil {

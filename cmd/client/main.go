@@ -19,17 +19,15 @@ import (
 var cc client.ClientConfig
 
 func init() {
+	client.ParseConfig(&cc)
 }
 
 func main() {
-	client.ParseConfig(&cc)
-
 	ctx, cancel := signal.NotifyContext(context.Background(),
 		syscall.SIGHUP,
 		syscall.SIGINT,
 		syscall.SIGTERM,
 		syscall.SIGQUIT)
-	defer cancel()
 
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -55,10 +53,11 @@ func main() {
 	}
 
 	go func() {
+		defer cancel()
 		for {
 			data, err := stream.Recv()
 			if errors.Is(err, io.EOF) {
-				fmt.Println("stats done..")
+				fmt.Println("stats streaming done..")
 				return
 			}
 			if err != nil {

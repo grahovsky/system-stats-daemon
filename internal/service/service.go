@@ -10,21 +10,25 @@ import (
 )
 
 type cStorage struct {
-	msl storage.Storage
-	msc storage.Storage
-	msd storage.Storage
+	msdef storage.Storage
+	msl   storage.Storage
+	msc   storage.Storage
+	msd   storage.Storage
 }
 
 func (s *StatsMonitoringSever) StartMonitoring() {
+	msdef := mstorage.New()
 	msl := mstorage.New()
 	msc := mstorage.New()
 	msd := mstorage.New()
 
 	s.cStorage = &cStorage{
-		msl: msl,
-		msc: msc,
-		msd: msd,
+		msdef: msdef,
+		msl:   msl,
+		msc:   msc,
+		msd:   msd,
 	}
+	s.m_at = time.Now()
 
 	go func() {
 		tiker := time.NewTicker(1 * time.Second)
@@ -33,6 +37,7 @@ func (s *StatsMonitoringSever) StartMonitoring() {
 		for {
 			select {
 			case <-tiker.C:
+				monitor.Default(s.cStorage.msdef)
 				monitor.ScanLoad(s.cStorage.msl)
 				monitor.ScanCpu(s.cStorage.msc)
 				monitor.ScanDisk(s.cStorage.msd)
@@ -42,22 +47,4 @@ func (s *StatsMonitoringSever) StartMonitoring() {
 			}
 		}
 	}()
-
-	// // for debug
-	// go func() {
-	// 	tiker := time.NewTicker(5 * time.Second)
-	// 	defer tiker.Stop()
-
-	// 	for {
-	// 		select {
-	// 		case <-tiker.C:
-	// 			elems := s.cStorage.msl.GetElements(5)
-	// 			for e := range elems {
-	// 				fmt.Printf("%+v\n", e)
-	// 			}
-	// 		case <-s.ctx.Done():
-	// 			return
-	// 		}
-	// 	}
-	// }()
 }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	pb "github.com/grahovsky/system-stats-daemon/internal/api/stats_service"
+	"github.com/grahovsky/system-stats-daemon/internal/logger"
 	"github.com/grahovsky/system-stats-daemon/internal/models"
 )
 
@@ -70,4 +71,12 @@ func (s *StatsMonitoringSever) DiskInfoAvg(at int64) *pb.DiskInfo {
 	}
 
 	return &pb.DiskInfo{Kbt: kbt / i, Tps: tps / i}
+}
+
+func (s *StatsMonitoringSever) checkRT(t_at int64) bool {
+	// return time.Now().After(s.m_at.Add(time.Duration(t_at) * time.Second))
+	// if limit storage, date stats != date server start, add technical storage
+	sa := <-s.cStorage.msdef.StoreAt()
+	logger.Info(sa.(time.Time).String())
+	return time.Now().After(sa.(time.Time).Add(time.Duration(t_at) * time.Second))
 }

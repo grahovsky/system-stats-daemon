@@ -22,7 +22,7 @@ type MemoryStorage struct {
 }
 
 func New() *MemoryStorage {
-	return &MemoryStorage{rwm: sync.RWMutex{}, list: list.New(), size: config.Settings.Stats.Limit}
+	return &MemoryStorage{rwm: sync.RWMutex{}, list: list.New(), size: config.Settings.Stats.Limit + 1}
 }
 
 func (ms *MemoryStorage) SetSize(owner string, newsize int64) {
@@ -45,7 +45,7 @@ func (ms *MemoryStorage) Push(s interface{}, t time.Time) {
 	if ms.list.Len() == int(ms.size) {
 		ms.list.Remove(ms.list.Back())
 	}
-	ms.list.PushFront(element{timestamp: t.Truncate(time.Second), data: s})
+	ms.list.PushFront(element{timestamp: t, data: s})
 }
 
 func (ms *MemoryStorage) GetElementsAt(t time.Time) <-chan interface{} {
@@ -94,4 +94,19 @@ func (ms *MemoryStorage) Show() {
 	for e := ms.list.Front(); e != nil; e = e.Next() {
 		fmt.Printf("%s: %+v\n", e.Value.(element).timestamp, e.Value.(element).data)
 	}
+}
+
+func (ms *MemoryStorage) StoreAt() <-chan interface{} {
+	ch := make(chan interface{})
+
+	go func() {
+		ms.rwm.RLock()
+		defer close(ch)
+		defer ms.rwm.RUnlock()
+
+		e := ms.list.Back()
+		ch <- e.Value.(element).timestamp
+	}()
+
+	return ch
 }
