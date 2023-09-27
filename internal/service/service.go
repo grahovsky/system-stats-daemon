@@ -3,6 +3,7 @@ package service
 import (
 	"time"
 
+	"github.com/grahovsky/system-stats-daemon/internal/config"
 	"github.com/grahovsky/system-stats-daemon/internal/logger"
 	"github.com/grahovsky/system-stats-daemon/internal/monitor"
 	"github.com/grahovsky/system-stats-daemon/internal/storage"
@@ -37,9 +38,15 @@ func (s *StatsMonitoringSever) StartMonitoring() {
 			select {
 			case <-tiker.C:
 				monitor.Default(s.cStorage.msdef)
-				monitor.ScanLoad(s.cStorage.msl)
-				monitor.ScanCPU(s.cStorage.msc)
-				monitor.ScanDisk(s.cStorage.msd)
+				if config.Settings.Stats.Collect.CPU {
+					monitor.ScanCPU(s.cStorage.msc)
+				}
+				if config.Settings.Stats.Collect.LoadAverage {
+					monitor.ScanLoad(s.cStorage.msl)
+				}
+				if config.Settings.Stats.Collect.DiskInfo {
+					monitor.ScanDisk(s.cStorage.msd)
+				}
 			case <-s.ctx.Done():
 				logger.Info("stopped stats scan..")
 				return

@@ -81,7 +81,7 @@ type StatsResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	LoadInfo *LoadInfo `protobuf:"bytes,1,opt,name=load_info,json=loadInfo,proto3" json:"load_info,omitempty"`
-	CPUInfo  *CPUInfo  `protobuf:"bytes,2,opt,name=cpu_info,json=cpuInfo,proto3" json:"cpu_info,omitempty"`
+	CpuInfo  *CPUInfo  `protobuf:"bytes,2,opt,name=cpu_info,json=cpuInfo,proto3" json:"cpu_info,omitempty"`
 	DiskInfo *DiskInfo `protobuf:"bytes,3,opt,name=disk_info,json=diskInfo,proto3" json:"disk_info,omitempty"`
 }
 
@@ -124,9 +124,9 @@ func (x *StatsResponse) GetLoadInfo() *LoadInfo {
 	return nil
 }
 
-func (x *StatsResponse) GetCPUInfo() *CPUInfo {
+func (x *StatsResponse) GetCpuInfo() *CPUInfo {
 	if x != nil {
-		return x.CPUInfo
+		return x.CpuInfo
 	}
 	return nil
 }
