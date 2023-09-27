@@ -104,8 +104,14 @@ func (ms *MemoryStorage) StoreAt() <-chan interface{} {
 		defer close(ch)
 		defer ms.rwm.RUnlock()
 
-		e := ms.list.Back()
-		ch <- e.Value.(element).timestamp
+		if ms.list.Len() == 0 {
+			return
+		}
+
+		ll := ms.list.Back()
+		if elem, ok := ll.Value.(element); ok {
+			ch <- elem.timestamp
+		}
 	}()
 
 	return ch

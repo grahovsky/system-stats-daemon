@@ -74,5 +74,8 @@ func (s *StatsMonitoringSever) DiskInfoAvg(at int64) *pb.DiskInfo {
 
 func (s *StatsMonitoringSever) checkRT(tAt int64) bool {
 	sa := <-s.cStorage.msdef.StoreAt()
-	return time.Now().After(sa.(time.Time).Add(time.Duration(tAt) * time.Second))
+	if tt, ok := sa.(time.Time); ok {
+		return time.Now().After(tt.Add(time.Duration(tAt) * time.Second))
+	}
+	return false
 }

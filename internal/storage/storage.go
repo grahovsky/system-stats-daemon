@@ -1,6 +1,11 @@
 package storage
 
-import "time"
+import (
+	"errors"
+	"time"
+)
+
+var ErrEpmtyStorage = errors.New("empty storage")
 
 type Storage interface {
 	Push(interface{}, time.Time)
