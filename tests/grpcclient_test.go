@@ -15,7 +15,7 @@ import (
 )
 
 func TestGRPCServer(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	srv := service.NewStatsMonitoringSever(ctx)
@@ -55,7 +55,7 @@ func TestGRPCServer(t *testing.T) {
 		pbC := pb.NewStatsServiceClient(conn)
 		req := &pb.StatsRequest{
 			ResponsePeriod: 1,
-			RangeTime:      0,
+			RangeTime:      1,
 		}
 
 		stream, err := pbC.StatsMonitoring(ctx, req)

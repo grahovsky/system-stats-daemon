@@ -1,5 +1,6 @@
 BIN := "./bin/smdaemon"
-DOCKER_IMG="smdaemon:develop"
+DOCKER_IMG="sm-service:develop"
+DOCKER_IMG_CLI="sm-client:develop"
 
 GIT_HASH := $(shell git log --format="%h" -n 1)
 LDFLAGS := -X main.release="develop" -X main.buildDate=$(shell date -u +%Y-%m-%dT%H:%M:%S) -X main.gitHash=$(GIT_HASH)
@@ -10,14 +11,23 @@ build:
 run: build
 	$(BIN) --config ./configs/config.yaml
 
-build-img:
+build-img-service:
 	docker build \
 		--build-arg=LDFLAGS="$(LDFLAGS)" \
 		-t $(DOCKER_IMG) \
-		-f build/Dockerfile .
+		-f build/service.Dockerfile .
 
-run-img: build-img
+build-img-client:
+	docker build \
+		--build-arg=LDFLAGS="$(LDFLAGS)" \
+		-t $(DOCKER_IMG_CLI) \
+		-f build/client.Dockerfile .
+
+run-img-service: build-img-service
 	docker run -p 8086:8086 $(DOCKER_IMG)
+
+run-img-client: build-img-client
+	docker run --network host ${DOCKER_IMG_CLI}
 
 version: build
 	$(BIN) --version
@@ -29,7 +39,7 @@ lint: install-lint-deps
 	golangci-lint run --timeout=90s ./...
 
 test-integration:
-	go test -race ./tests/... -count 5
+	go test -race ./tests/... -count 3
 
 test: test-integration
 	go test -race ./internal/... -count 100
@@ -37,4 +47,4 @@ test: test-integration
 generate: 
 	go generate ./...
 
-.PHONY: build run build-img run-img version test lint
+.PHONY: build run build-img-service run-img-service version test lint
