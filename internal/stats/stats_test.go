@@ -6,7 +6,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLogger(t *testing.T) {
+func TestStats(t *testing.T) {
+	t.Parallel()
 	type testCase struct {
 		sVal   string
 		expVal float64
@@ -47,6 +48,7 @@ func TestLogger(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run("fix", func(t *testing.T) {
+			t.Parallel()
 			actVal := SafeParseFloat(tc.sVal)
 			if tc.expErr {
 				require.NotEqual(t, actVal, tc.expVal)

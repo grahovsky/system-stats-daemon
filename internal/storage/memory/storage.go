@@ -29,10 +29,8 @@ func (ms *MemoryStorage) SetSize(owner string, newsize int64) {
 	ms.rwm.Lock()
 	defer ms.rwm.Unlock()
 
-	if newsize > ms.size {
-		ms.size = newsize
-		logger.Info(fmt.Sprintf("[%s] changed size of storage. New size: %d", owner, newsize))
-	}
+	ms.size = newsize
+	logger.Info(fmt.Sprintf("[%s] changed size of storage. New size: %d", owner, newsize))
 }
 
 func (ms *MemoryStorage) Push(s interface{}, t time.Time) {
