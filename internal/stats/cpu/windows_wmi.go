@@ -7,7 +7,7 @@ import (
 	"github.com/grahovsky/system-stats-daemon/internal/models"
 )
 
-type Win32_PerfFormattedData_PerfOS_Processor struct {
+type Win32PerfFormattedDataPerfOSProcessor struct {
 	PercentProcessorTime  uint64
 	PercentUserTime       uint64
 	PercentPrivilegedTime uint64
@@ -15,7 +15,7 @@ type Win32_PerfFormattedData_PerfOS_Processor struct {
 }
 
 func GetStatsOs() (*models.CPUInfo, error) {
-	var dst []Win32_PerfFormattedData_PerfOS_Processor
+	var dst []Win32PerfFormattedDataPerfOSProcessor
 	query := "SELECT * FROM Win32_PerfFormattedData_PerfOS_Processor WHERE Name = '_Total'"
 	err := wmi.Query(query, &dst)
 	if err != nil {

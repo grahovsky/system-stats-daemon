@@ -16,8 +16,8 @@ func init() {
 	logger.Info("encoding set: UTF-8")
 }
 
-// криво работает, т.к. опрос идет раз в одну секунду, т.е. получается 1с + 1с задержка. Перевел на wmi
-func GetStatsOs_() (*models.CPUInfo, error) { //nolint
+// криво работает, т.к. опрос идет раз в одну секунду, т.е. получается 1с + 1с задержка. Перевел на wmi.
+func GetStatsOsBak() (*models.CPUInfo, error) {
 	out, err := executor.Exec("typeperf", []string{
 		`\Processor Information(_Total)\% Privileged Time`,
 		`\Processor Information(_Total)\% User Time`,
@@ -28,10 +28,10 @@ func GetStatsOs_() (*models.CPUInfo, error) { //nolint
 	if err != nil {
 		return nil, err
 	}
-	return parseData(string(out))
+	return parseData(out)
 }
 
-func parseData(output string) (*models.CPUInfo, error) { //nolint
+func parseData(output string) (*models.CPUInfo, error) {
 	var err error
 	lines := strings.Split(output, "\r\n")
 	if len(lines) < 3 {
