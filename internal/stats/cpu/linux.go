@@ -3,11 +3,11 @@
 package cpu
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/grahovsky/system-stats-daemon/internal/executor"
 	"github.com/grahovsky/system-stats-daemon/internal/models"
+	"github.com/grahovsky/system-stats-daemon/internal/stats"
 )
 
 const (
@@ -24,20 +24,9 @@ func GetStatsOs() (*models.CPUInfo, error) {
 
 	fields := strings.Fields(res)
 
-	user, err := strconv.ParseFloat(fields[userPos], 64)
-	if err != nil {
-		return nil, err
-	}
-
-	system, err := strconv.ParseFloat(fields[systemPos], 64)
-	if err != nil {
-		return nil, err
-	}
-
-	idle, err := strconv.ParseFloat(fields[idlePos], 64)
-	if err != nil {
-		return nil, err
-	}
+	user := stats.SafeParseFloat(fields[userPos])
+	system := stats.SafeParseFloat(fields[systemPos])
+	idle := stats.SafeParseFloat(fields[idlePos])
 
 	return &models.CPUInfo{
 		User:   user,

@@ -3,11 +3,11 @@
 package load
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/grahovsky/system-stats-daemon/internal/executor"
 	"github.com/grahovsky/system-stats-daemon/internal/models"
+	"github.com/grahovsky/system-stats-daemon/internal/stats"
 )
 
 const (
@@ -24,20 +24,9 @@ func GetStatsOs() (*models.LoadAverageInfo, error) {
 
 	fields := strings.Fields(res)
 
-	load1Min, err := strconv.ParseFloat(fields[load1MinPos], 64)
-	if err != nil {
-		return nil, err
-	}
-
-	load5Min, err := strconv.ParseFloat(fields[load5MinPos], 64)
-	if err != nil {
-		return nil, err
-	}
-
-	load15Min, err := strconv.ParseFloat(fields[load15MinPos], 64)
-	if err != nil {
-		return nil, err
-	}
+	load1Min := stats.SafeParseFloat(fields[load1MinPos])
+	load5Min := stats.SafeParseFloat(fields[load5MinPos])
+	load15Min := stats.SafeParseFloat(fields[load15MinPos])
 
 	return &models.LoadAverageInfo{
 		Load1Min:  load1Min,

@@ -3,11 +3,11 @@
 package disk
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/grahovsky/system-stats-daemon/internal/executor"
 	"github.com/grahovsky/system-stats-daemon/internal/models"
+	"github.com/grahovsky/system-stats-daemon/internal/stats"
 )
 
 const (
@@ -23,15 +23,8 @@ func GetStatsOs() (*models.DiskInfo, error) {
 
 	fields := strings.Fields(res)
 
-	kbt, err := strconv.ParseFloat(fields[kbtPos], 64)
-	if err != nil {
-		return nil, err
-	}
-
-	tps, err := strconv.ParseFloat(fields[tpsPos], 64)
-	if err != nil {
-		return nil, err
-	}
+	kbt := stats.SafeParseFloat(fields[kbtPos])
+	tps := stats.SafeParseFloat(fields[tpsPos])
 
 	return &models.DiskInfo{
 		Kbt: kbt,

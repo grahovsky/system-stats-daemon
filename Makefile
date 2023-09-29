@@ -1,4 +1,5 @@
 BIN := "./bin/smdaemon"
+BIN_CLI := "./bin/sm-client"
 DOCKER_IMG="sm-service:develop"
 DOCKER_IMG_CLI="sm-client:develop"
 
@@ -10,6 +11,12 @@ build:
 
 run: build
 	$(BIN) --config ./configs/config.yaml
+
+build-client:
+	go build -v -o $(BIN_CLI) -ldflags "$(LDFLAGS)" ./cmd/client
+
+run-client: build-client
+	$(BIN_CLI)
 
 build-img-service:
 	docker build \

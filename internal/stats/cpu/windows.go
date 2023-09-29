@@ -3,7 +3,6 @@
 package cpu
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/grahovsky/system-stats-daemon/internal/executor"
@@ -41,17 +40,9 @@ func parseData(output string) (*models.CPUInfo, error) { //nolint
 
 	fields := strings.Split(lines[2], ",")
 
-	system, err := strconv.ParseFloat(strings.Trim(fields[1], "\""), 64)
-	if err != nil {
-		return nil, err
-	}
-
-	user, err := strconv.ParseFloat(strings.Trim(fields[2], "\""), 64)
-	if err != nil {
-		return nil, err
-	}
-
-	idle, err := strconv.ParseFloat(strings.Trim(fields[3], "\""), 64)
+	system := stats.SafeParseFloat(strings.Trim(fields[1], "\""))
+	user := stats.SafeParseFloat(strings.Trim(fields[2], "\""))
+	idle := stats.SafeParseFloat(strings.Trim(fields[3], "\""))
 	if err != nil {
 		return nil, err
 	}
