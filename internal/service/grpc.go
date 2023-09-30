@@ -9,6 +9,7 @@ import (
 	pb "github.com/grahovsky/system-stats-daemon/internal/api/stats_service"
 	"github.com/grahovsky/system-stats-daemon/internal/config"
 	"github.com/grahovsky/system-stats-daemon/internal/logger"
+	"github.com/grahovsky/system-stats-daemon/internal/monitor"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/peer"
@@ -17,14 +18,18 @@ import (
 
 type StatsMonitoringSever struct {
 	ctx        context.Context
-	cStorage   *cStorage
+	monitor    *monitor.Server
 	grpcServer *grpc.Server
 	pb.UnimplementedStatsServiceServer
 }
 
 func NewStatsMonitoringSever(ctx context.Context) *StatsMonitoringSever {
+	monitor := monitor.NewMonitor(ctx)
+	monitor.StartMonitoring()
+
 	return &StatsMonitoringSever{
-		ctx: ctx,
+		ctx:     ctx,
+		monitor: monitor,
 	}
 }
 
@@ -40,7 +45,6 @@ func (s *StatsMonitoringSever) Start() error {
 	s.grpcServer = grpc.NewServer(opts...)
 	defer s.grpcServer.GracefulStop()
 
-	s.StartMonitoring()
 	pb.RegisterStatsServiceServer(s.grpcServer, s)
 
 	return s.grpcServer.Serve(lis)
@@ -71,13 +75,13 @@ func (s *StatsMonitoringSever) StatsMonitoring(req *pb.StatsRequest,
 	for {
 		select {
 		case <-responseTicker.C:
-			if !s.checkRT(req.RangeTime) {
+			if !s.monitor.CheckRT(req.RangeTime) {
 				continue
 			}
 			err := stream.Send(&pb.StatsResponse{
-				LoadInfo: s.LoadInfoAvg(req.RangeTime),
-				CpuInfo:  s.CPUInfoAvg(req.RangeTime),
-				DiskInfo: s.DiskInfoAvg(req.RangeTime),
+				LoadInfo: s.monitor.LoadInfoAvg(req.RangeTime),
+				CpuInfo:  s.monitor.CPUInfoAvg(req.RangeTime),
+				DiskInfo: s.monitor.DiskInfoAvg(req.RangeTime),
 			})
 			if err != nil {
 				return err

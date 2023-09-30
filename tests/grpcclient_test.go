@@ -19,7 +19,6 @@ func TestGRPCServer(t *testing.T) {
 	defer cancel()
 
 	srv := service.NewStatsMonitoringSever(ctx)
-	srv.StartMonitoring()
 
 	grpcSrv := grpc.NewServer()
 	pb.RegisterStatsServiceServer(grpcSrv, srv)
