@@ -30,6 +30,8 @@ build-img-client:
 		-t $(DOCKER_IMG_CLI) \
 		-f build/client.Dockerfile .
 
+build-img-all: build-img-service build-img-client
+
 run-img-service: build-img-service
 	docker run -p 8086:8086 $(DOCKER_IMG)
 
@@ -53,5 +55,17 @@ test: test-integration
 
 generate: 
 	go generate ./...
+
+up:
+	docker compose -f deployments/compose.yaml --project-directory deployments up -d
+
+logs:
+	docker compose -f deployments/compose.yaml logs -f
+
+down:
+	docker compose -f deployments/compose.yaml down
+
+down-clean:
+	docker compose -f deployments/compose.yaml down --rmi all
 
 .PHONY: build run build-img-service run-img-service version test lint
