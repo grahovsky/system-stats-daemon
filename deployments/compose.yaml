@@ -5,17 +5,18 @@ services:
   service:
     build:
       context: ..
-      dockerfile: ./build/service.Dockerfile
+      dockerfile: ./build/Dockerfile
     restart: on-failure
+    command: sh -c "$${BIN_FILE_SERVICE} --config $${CONFIG_FILE}"
     ports:
       - 8086:8086
 
   client:
     build:
       context: ..
-      dockerfile: ./build/client.Dockerfile
+      dockerfile: ./build/Dockerfile
     restart: on-failure
-    command: sh -c "$${BIN_FILE} -h service"
+    command: sh -c "$${BIN_FILE_CLIENT} -h service"
     depends_on:
       service:
         condition: service_started

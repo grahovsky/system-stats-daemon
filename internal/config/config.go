@@ -12,7 +12,7 @@ type Config struct {
 	} `mapstructure:"log"`
 	Server struct {
 		Host string `mapstructure:"host" env:"SRV_HOST"`
-		Port string `mapstructure:"port" env:"HTTP_PORT"`
+		Port string `mapstructure:"port" env:"SRV_PORT"`
 	} `mapstructure:"server"`
 	Stats struct {
 		Limit   int64 `mapstructure:"limit" env:"STATS_LIMIT"`
@@ -65,7 +65,7 @@ func defaultSettings() Config {
 		}{Level: "DEBUG"},
 		Server: struct {
 			Host string `mapstructure:"host" env:"SRV_HOST"`
-			Port string `mapstructure:"port" env:"HTTP_PORT"`
+			Port string `mapstructure:"port" env:"SRV_PORT"`
 		}{Host: "0.0.0.0", Port: "8086"},
 		Stats: struct {
 			Limit   int64 "mapstructure:\"limit\" env:\"STATS_LIMIT\""

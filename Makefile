@@ -1,7 +1,6 @@
 BIN := "./bin/smdaemon"
 BIN_CLI := "./bin/sm-client"
-DOCKER_IMG="sm-service:develop"
-DOCKER_IMG_CLI="sm-client:develop"
+DOCKER_IMG := "smd:develop"
 
 GIT_HASH := $(shell git log --format="%h" -n 1)
 LDFLAGS := -X main.release="develop" -X main.buildDate=$(shell date -u +%Y-%m-%dT%H:%M:%S) -X main.gitHash=$(GIT_HASH)
@@ -18,25 +17,17 @@ build-client:
 run-client: build-client
 	$(BIN_CLI)
 
-build-img-service:
+build-img:
 	docker build \
 		--build-arg=LDFLAGS="$(LDFLAGS)" \
 		-t $(DOCKER_IMG) \
-		-f build/service.Dockerfile .
+		-f build/Dockerfile .
 
-build-img-client:
-	docker build \
-		--build-arg=LDFLAGS="$(LDFLAGS)" \
-		-t $(DOCKER_IMG_CLI) \
-		-f build/client.Dockerfile .
+run-img-service: build-img
+	docker run -p 8086:8086 $(DOCKER_IMG) 
 
-build-img-all: build-img-service build-img-client
-
-run-img-service: build-img-service
-	docker run -p 8086:8086 $(DOCKER_IMG)
-
-run-img-client: build-img-client
-	docker run --network host ${DOCKER_IMG_CLI}
+run-img-client: build-img
+	docker run -it --network host smd:develop sh -c "\${BIN_FILE_CLIENT}"
 
 version: build
 	$(BIN) --version
@@ -47,17 +38,20 @@ install-lint-deps:
 lint: install-lint-deps
 	golangci-lint run --timeout=90s ./...
 
-test-integration:
-	go test -race ./tests/... -count 3
+test-grpc:
+	go test -race ./tests/grpc/... -count 3
 
-test: test-integration
+test: test-grpc
 	go test -race ./internal/... -count 100
+
+test-integration:
+	go test -tags integration ./tests/integration/... -count 1 -v
 
 generate: 
 	go generate ./...
 
 up:
-	docker compose -f deployments/compose.yaml --project-directory deployments up -d
+	docker compose -f deployments/compose.yaml --project-directory deployments up -d --build
 
 logs:
 	docker compose -f deployments/compose.yaml logs -f
@@ -66,6 +60,6 @@ down:
 	docker compose -f deployments/compose.yaml down
 
 down-clean:
-	docker compose -f deployments/compose.yaml down --rmi all
+	docker compose -f deployments/compose.yaml down --rmi all -v
 
 .PHONY: build run build-img-service run-img-service version test lint

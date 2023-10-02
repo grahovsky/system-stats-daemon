@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"time"
@@ -14,6 +15,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
+)
+
+var (
+	ErrResponsePeriod = errors.New("incorrect response period")
+	ErrRangeTime      = errors.New("incorrect range time")
 )
 
 type StatsMonitoringSever struct {
@@ -66,8 +72,20 @@ func (s *StatsMonitoringSever) StatsMonitoring(req *pb.StatsRequest,
 
 	if req.RangeTime > config.Settings.Stats.Limit {
 		logger.Error(fmt.Sprintf("client %s err, rangetime exceeds limit stored stats time", clientID))
-		return status.Error(codes.Internal, fmt.Sprintf("rangetime (%d) exceeds limit stored stats time (%d)",
-			req.RangeTime, config.Settings.Stats.Limit))
+		return status.Error(codes.Internal, fmt.Errorf("rangetime (%d) exceeds limit stored stats time (%d) %w",
+			req.RangeTime, config.Settings.Stats.Limit, ErrRangeTime).Error())
+	}
+
+	if req.RangeTime < 1 {
+		logger.Error(fmt.Sprintf("client %s err, min rangetime 1 sec", clientID))
+		return status.Error(codes.Internal, fmt.Errorf("rangetime (%d). min rangetime 1 sec %w",
+			req.RangeTime, ErrRangeTime).Error())
+	}
+
+	if req.ResponsePeriod < 1 {
+		logger.Error(fmt.Sprintf("client %s err, min response period 1 sec", clientID))
+		return status.Error(codes.Internal, fmt.Errorf("response period (%d). min response period 1 sec %w",
+			req.ResponsePeriod, ErrResponsePeriod).Error())
 	}
 
 	responseTicker := time.NewTicker(time.Duration(req.ResponsePeriod) * time.Second)
