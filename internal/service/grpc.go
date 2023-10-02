@@ -97,9 +97,10 @@ func (s *StatsMonitoringSever) StatsMonitoring(req *pb.StatsRequest,
 				continue
 			}
 			err := stream.Send(&pb.StatsResponse{
-				LoadInfo: s.monitor.LoadInfoAvg(req.RangeTime),
-				CpuInfo:  s.monitor.CPUInfoAvg(req.RangeTime),
-				DiskInfo: s.monitor.DiskInfoAvg(req.RangeTime),
+				LoadInfo:    s.monitor.LoadInfoAvg(req.RangeTime),
+				CpuInfo:     s.monitor.CPUInfoAvg(req.RangeTime),
+				DiskInfo:    s.monitor.DiskInfoAvg(req.RangeTime),
+				TalkersInfo: s.monitor.TalkersAvg(req.RangeTime),
 			})
 			if err != nil {
 				return err

@@ -29,6 +29,13 @@ func PrintResponse(data *pb.StatsResponse) {
 		fmt.Println("\tkbt:", round(data.GetDiskInfo().GetKbt()))
 		fmt.Println("\ttps:", round(data.GetDiskInfo().GetTps()))
 	}
+
+	if !EmptyTalkers(data.GetTalkersInfo()) {
+		fmt.Println("Net talkers:")
+		fmt.Println("\tTop 1:", data.GetTalkersInfo().GetTop1())
+		fmt.Println("\tTop 2:", data.GetTalkersInfo().GetTop2())
+		fmt.Println("\tTop 3:", data.GetTalkersInfo().GetTop3())
+	}
 }
 
 func round(v float64) float64 {
@@ -45,4 +52,8 @@ func EmptyCPU(cpu *pb.CPUInfo) bool {
 
 func EmptyDisk(disk *pb.DiskInfo) bool {
 	return disk.Kbt == 0.0 && disk.Tps == 0.0
+}
+
+func EmptyTalkers(talkers *pb.TalkersInfo) bool {
+	return talkers.Top1 == "" && talkers.Top2 == "" && talkers.Top3 == ""
 }

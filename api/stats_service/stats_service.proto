@@ -17,6 +17,7 @@ message StatsResponse {
   LoadInfo load_info = 1;
   CPUInfo cpu_info = 2;
   DiskInfo disk_info = 3;
+  TalkersInfo talkers_info = 4;
 }
 
 message LoadInfo {
@@ -34,4 +35,10 @@ message CPUInfo {
 message DiskInfo {
   double kbt = 1;
   double tps = 2;
+}
+
+message TalkersInfo {
+  string top1 = 1;
+  string top2 = 2;
+  string top3 = 3;
 }

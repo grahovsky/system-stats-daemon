@@ -18,7 +18,7 @@ type DiskInfo struct {
 }
 
 type Talkers struct {
-	talkers1 string
-	talkers2 string
-	talkers3 string
+	Top1 string
+	Top2 string
+	Top3 string
 }

@@ -72,6 +72,24 @@ func (s *Server) DiskInfoAvg(at int64) *pb.DiskInfo {
 	return &pb.DiskInfo{Kbt: kbt / i, Tps: tps / i}
 }
 
+func (s *Server) TalkersAvg(at int64) *pb.TalkersInfo {
+	timeAt := time.Now().Add(-time.Duration(at) * time.Second)
+
+	top1 := ""
+	top2 := ""
+	top3 := ""
+
+	elems := s.cStorage.mst.GetElementsAt(timeAt)
+	for el := range elems {
+		elem := el.(*models.Talkers)
+		top1 = elem.Top1
+		top2 = elem.Top2
+		top3 = elem.Top3
+	}
+
+	return &pb.TalkersInfo{Top1: top1, Top2: top2, Top3: top3}
+}
+
 func (s *Server) CheckRT(tAt int64) bool {
 	sa := <-s.cStorage.msdef.StoreAt()
 	if tt, ok := sa.(time.Time); ok {

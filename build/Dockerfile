@@ -25,7 +25,7 @@ RUN CGO_ENABLED=0 go build \
         -o ${BIN_FILE_CLIENT} cmd/client/*
 
 # На выходе тонкий образ
-FROM alpine:3.9
+FROM ubuntu:latest
 
 LABEL ORGANIZATION="OTUS Online Education"
 LABEL SERVICE="smdaemon"
@@ -33,6 +33,8 @@ LABEL MAINTAINERS="grahovsky@gmail.com"
 
 ENV BIN_FILE_SERVICE "/opt/smdaemon/service"
 ENV BIN_FILE_CLIENT "/opt/smdaemon/client"
+
+RUN apt-get update && apt-get install -y iftop sysstat
 
 COPY --from=build ${BIN_FILE_SERVICE} ${BIN_FILE_SERVICE}
 COPY --from=build ${BIN_FILE_CLIENT} ${BIN_FILE_CLIENT}

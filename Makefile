@@ -53,6 +53,8 @@ generate:
 up:
 	docker compose -f deployments/compose.yaml --project-directory deployments up -d --build
 
+rebuild: docker compose -f deployments/compose.yaml --project-directory deployments build --no-cache
+
 logs:
 	docker compose -f deployments/compose.yaml logs -f
 
