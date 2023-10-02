@@ -16,3 +16,9 @@ type DiskInfo struct {
 	Kbt float64
 	Tps float64
 }
+
+type Talkers struct {
+	talkers1 string
+	talkers2 string
+	talkers3 string
+}

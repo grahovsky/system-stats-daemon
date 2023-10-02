@@ -9,6 +9,7 @@ import (
 	"github.com/grahovsky/system-stats-daemon/internal/stats/cpu"
 	"github.com/grahovsky/system-stats-daemon/internal/stats/disk"
 	"github.com/grahovsky/system-stats-daemon/internal/stats/load"
+	"github.com/grahovsky/system-stats-daemon/internal/stats/talkers"
 	"github.com/grahovsky/system-stats-daemon/internal/storage"
 	mstorage "github.com/grahovsky/system-stats-daemon/internal/storage/memory"
 )
@@ -23,6 +24,7 @@ type cStorage struct {
 	msl   storage.Storage
 	msc   storage.Storage
 	msd   storage.Storage
+	mst   storage.Storage
 }
 
 func NewMonitor(ctx context.Context) *Server {
@@ -34,14 +36,17 @@ func (s *Server) StartMonitoring() {
 	msl := mstorage.New()
 	msc := mstorage.New()
 	msd := mstorage.New()
+	mst := mstorage.New()
 
 	s.cStorage = &cStorage{
 		msdef: msdef,
 		msl:   msl,
 		msc:   msc,
 		msd:   msd,
+		mst:   mst,
 	}
 
+	// ticker scan
 	go func() {
 		tiker := time.NewTicker(1 * time.Second)
 		defer tiker.Stop()
@@ -65,6 +70,12 @@ func (s *Server) StartMonitoring() {
 			}
 		}
 	}()
+
+	// stream scan
+	go func() {
+		talkers.GetStats(s.ctx, s.cStorage.mst)
+	}()
+
 	logger.Info("started stats scan")
 }
 
