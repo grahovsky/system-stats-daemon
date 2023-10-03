@@ -10,7 +10,7 @@ type Config struct {
 }
 
 func ParseConfig(c *Config) {
-	pflag.StringVarP(&c.Host, "host", "h", "0.0.0.0", "server host")
+	pflag.StringVarP(&c.Host, "host", "h", "service", "server host")
 	pflag.StringVarP(&c.Port, "port", "p", "8086", "server port")
 	pflag.Int64VarP(&c.ResponsePeriod, "responseperiod", "n", 5, "period for sending statistics (sec)")
 	pflag.Int64VarP(&c.RangeTime, "rangetime", "m", 15, "the range for which the average statistics are collected (sec)")

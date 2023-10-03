@@ -47,6 +47,10 @@ test: test-grpc
 test-integration:
 	go test -tags integration ./tests/integration/... -count 1 -v
 
+integration-test:
+	docker compose -f deployments/integration-test-compose.yaml up --build --attach tester --exit-code-from tester
+	docker compose -f deployments/integration-test-compose.yaml down
+
 generate: 
 	go generate ./...
 
@@ -61,7 +65,9 @@ logs:
 down:
 	docker compose -f deployments/compose.yaml down
 
-down-clean:
+clean:
 	docker compose -f deployments/compose.yaml down --rmi all -v
+	docker compose -f deployments/integration-test-compose.yaml down --rmi all -v
+
 
 .PHONY: build run build-img-service run-img-service version test lint

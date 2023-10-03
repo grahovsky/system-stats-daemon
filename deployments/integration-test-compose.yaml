@@ -1,0 +1,18 @@
+version: '3.1'
+
+services:
+  
+  service:
+    build:
+      context: ..
+      dockerfile: ./build/Dockerfile
+    restart: on-failure
+    command: sh -c "$${BIN_FILE_SERVICE} --config $${CONFIG_FILE}"
+
+  tester:
+    build:
+      context: ..
+      dockerfile: ./build/integration.Dockerfile
+    depends_on:
+      service:
+        condition: service_started
