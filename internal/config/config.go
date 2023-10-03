@@ -20,6 +20,7 @@ type Config struct {
 			LoadAverage bool `mapstructure:"loadAverage" env:"LOAD_AVERAGE"`
 			CPU         bool `mapstructure:"cpu" env:"CPU"`
 			DiskInfo    bool `mapstructure:"discInfo" env:"DISC_INFO"`
+			Talkers     bool `mapstructure:"talkers" env:"TALKERS"`
 		} `mapstructure:"collect"`
 	} `mapstructure:"stats"`
 }
@@ -73,11 +74,13 @@ func defaultSettings() Config {
 				LoadAverage bool "mapstructure:\"loadAverage\" env:\"LOAD_AVERAGE\""
 				CPU         bool "mapstructure:\"cpu\" env:\"CPU\""
 				DiskInfo    bool "mapstructure:\"discInfo\" env:\"DISC_INFO\""
+				Talkers     bool "mapstructure:\"talkers\" env:\"TALKERS\""
 			} "mapstructure:\"collect\""
 		}{Limit: 600, Collect: struct {
 			LoadAverage bool "mapstructure:\"loadAverage\" env:\"LOAD_AVERAGE\""
 			CPU         bool "mapstructure:\"cpu\" env:\"CPU\""
 			DiskInfo    bool "mapstructure:\"discInfo\" env:\"DISC_INFO\""
+			Talkers     bool "mapstructure:\"talkers\" env:\"TALKERS\""
 		}{LoadAverage: true, CPU: true, DiskInfo: true}},
 	}
 }

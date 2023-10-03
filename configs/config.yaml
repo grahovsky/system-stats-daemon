@@ -9,3 +9,4 @@ stats:
     cpu: true
     discInfo: true
     loadAverage: true
+    talkers: true

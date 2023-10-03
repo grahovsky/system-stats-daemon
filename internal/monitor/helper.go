@@ -87,6 +87,8 @@ func (s *Server) TalkersAvg(at int64) *pb.TalkersInfo {
 		top3 = elem.Top3
 	}
 
+	// to do: impl correctly avg for talkers
+
 	return &pb.TalkersInfo{Top1: top1, Top2: top2, Top3: top3}
 }
 
