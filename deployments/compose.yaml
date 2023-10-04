@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+  
+  service:
+    build:
+      context: ..
+      dockerfile: ./build/Dockerfile
+    restart: on-failure
+    command: sh -c "$${BIN_FILE_SERVICE} --config $${CONFIG_FILE}"
+    ports:
+      - 8086:8086
+
+  client:
+    build:
+      context: ..
+      dockerfile: ./build/Dockerfile
+    restart: on-failure
+    command: sh -c "$${BIN_FILE_CLIENT} -h service"
+    depends_on:
+      service:
+        condition: service_started

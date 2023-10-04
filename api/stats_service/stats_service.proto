@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package stats_service;
+
+option go_package = "./stats_service;stats_service";
+
+service StatsService {
+  rpc StatsMonitoring(StatsRequest) returns (stream StatsResponse);
+}
+
+message StatsRequest {
+  int64 response_period = 1;
+  int64 range_time = 2;
+}
+
+message StatsResponse {
+  LoadInfo load_info = 1;
+  CPUInfo cpu_info = 2;
+  DiskInfo disk_info = 3;
+  TalkersInfo talkers_info = 4;
+}
+
+message LoadInfo {
+  double load_1min = 1;
+  double load_5min = 2;
+  double load_15min = 3;
+}
+
+message CPUInfo {
+  double user = 1;
+  double system = 2;
+  double idle = 3;
+}
+
+message DiskInfo {
+  double kbt = 1;
+  double tps = 2;
+}
+
+message TalkersInfo {
+  string top1 = 1;
+  string top2 = 2;
+  string top3 = 3;
+}
