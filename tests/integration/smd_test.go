@@ -6,16 +6,34 @@ import (
 	"context"
 	"math/rand"
 	"net"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/grahovsky/system-stats-daemon/internal/api/stats_service"
-	"github.com/grahovsky/system-stats-daemon/internal/client"
 	"github.com/grahovsky/system-stats-daemon/internal/service"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
+
+var (
+	host string
+	port string
+)
+
+func init() {
+	host = getenv("SMD_HOST", "localhost")
+	port = getenv("SMD_PORT", "8086")
+}
+
+func getenv(key, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return fallback
+	}
+	return value
+}
 
 type SystemStatsSuite struct {
 	suite.Suite
@@ -26,10 +44,7 @@ type SystemStatsSuite struct {
 }
 
 func (s *SystemStatsSuite) SetupSuite() {
-	var cfg client.Config
-	client.ParseConfig(&cfg)
-
-	statConn, err := grpc.Dial(net.JoinHostPort(cfg.Host, cfg.Port),
+	statConn, err := grpc.Dial(net.JoinHostPort(host, port),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	s.Require().NoError(err)
 

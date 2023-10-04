@@ -26,7 +26,6 @@ func GetStatsOs(ctx context.Context, st storage.Storage) {
 	cmd := exec.Command("iftop", "-t", "-o 40")
 
 	stdout, err := cmd.StdoutPipe()
-	// stdout, err := cmd.CombinedOutput()
 	if err != nil {
 		logger.Error("iftop start error")
 		return

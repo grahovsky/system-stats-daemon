@@ -38,10 +38,7 @@ install-lint-deps:
 lint: install-lint-deps
 	golangci-lint run --timeout=90s ./...
 
-test-grpc:
-	go test -race ./tests/grpc/... -count 3
-
-test: test-grpc
+test:
 	go test -race ./internal/... -count 100
 
 test-integration:

@@ -13,6 +13,8 @@ services:
     build:
       context: ..
       dockerfile: ./build/integration.Dockerfile
+    environment:
+      - SMD_HOST=service
     depends_on:
       service:
         condition: service_started
